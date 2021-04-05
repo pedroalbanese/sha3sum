@@ -1,4 +1,4 @@
-# sha3sum
+# SHA3SUM(2)
 
 <PRE>
 SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021
