@@ -14,3 +14,22 @@ sha3sum [-v] [-b N] [-c <hash.ext>] -t &lt;file.ext&gt;
         Target file/wildcard to generate hashsum list.
   -v    Verbose mode. (The exit code is always 0 in this mode)
   </PRE>
+  
+### Examples:
+
+#### Generate hashsum list:
+<pre>
+./gostsum -t "*.*" > hash.txt
+</pre>
+
+#### Generate recursive hashsum list:
+<pre>
+$ find . -type f -name "*.*" -exec ./gostsum -t '{}' \; > hash.txt 
+</pre>
+##### Always works in binary mode. 
+
+#### Check hashsum file:
+<pre>
+./gostsum [-v] -c hash.txt
+</pre>
+##### Exit code is always 0 in vebose mode. 
