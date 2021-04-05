@@ -20,17 +20,17 @@ sha3sum [-v] [-b N] [-c <hash.ext>] -t &lt;file.ext&gt;
 
 #### Generate hashsum list:
 <pre>
-./gostsum -t "*.*" > hash.txt
+./sha3sum -t "*.*" > hash.txt
 </pre>
 
 #### Generate recursive hashsum list:
 <pre>
-$ find . -type f -name "*.*" -exec ./gostsum -t '{}' \; > hash.txt 
+$ find . -type f -name "*.*" -exec ./sha3sum -t '{}' \; > hash.txt 
 </pre>
 ##### Always works in binary mode. 
 
 #### Check hashsum file:
 <pre>
-./gostsum [-v] -c hash.txt
+./sha3sum [-v] -c hash.txt
 </pre>
 ##### Exit code is always 0 in vebose mode. 
