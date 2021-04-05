@@ -1,4 +1,5 @@
 # SHA3SUM(2)
+## sha3sum Parallel Implementation written in Go
 
 <PRE>
 SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021
