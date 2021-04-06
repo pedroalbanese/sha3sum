@@ -14,6 +14,7 @@ import (
 
 	var check = flag.String("c", "", "Check hashsum file.")
 	var bits = flag.Int("b", 224, "Bits: 224, 256, 384 and 512.")
+	var recursive = flag.Bool("r", false, "Process directories recursively.")
 	var target = flag.String("t", "", "Target file/wildcard to generate hashsum list.")
 	var verbose = flag.Bool("v", false, "Verbose mode. (The exit code is always 0 in this mode)")
 
@@ -23,13 +24,13 @@ func main() {
         if (len(os.Args) < 2) {
 	fmt.Println("SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
 	fmt.Println("Usage of",os.Args[0]+":")
-        fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] -t <file.ext>\n\n", os.Args[0])
+        fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] [-r] -t <file.ext>\n\n", os.Args[0])
         flag.PrintDefaults()
         os.Exit(1)
         }
 
 
-        if *target != "" && *bits == 224 {
+         if *target != "" && *recursive == false && *bits == 224 {
 	files, err := filepath.Glob(*target)
 	if err != nil {
 	    log.Fatal(err)
@@ -49,7 +50,34 @@ func main() {
 	}
 
 
-        if *target != "" && *bits == 256 {
+	if *target != "" && *recursive == true && *bits == 224 {
+		err := filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			file, err := os.Stat(path)
+			if file.IsDir() {
+			} else {
+			h := sha3.New224()
+			f, err := os.Open(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := io.Copy(h, f); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
+			}
+			return nil
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+
+        if *target != "" && *recursive == false && *bits == 256 {
 	files, err := filepath.Glob(*target)
 	if err != nil {
 	    log.Fatal(err)
@@ -69,7 +97,34 @@ func main() {
 	}
 
 
-        if *target != "" && *bits == 384 {
+	if *target != "" && *recursive == true && *bits == 256 {
+		err := filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			file, err := os.Stat(path)
+			if file.IsDir() {
+			} else {
+			h := sha3.New256()
+			f, err := os.Open(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := io.Copy(h, f); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
+			}
+			return nil
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+
+        if *target != "" && *recursive == false && *bits == 384 {
 	files, err := filepath.Glob(*target)
 	if err != nil {
 	    log.Fatal(err)
@@ -89,7 +144,34 @@ func main() {
 	}
 
 
-        if *target != "" && *bits == 512 {
+	if *target != "" && *recursive == true && *bits == 384 {
+		err := filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			file, err := os.Stat(path)
+			if file.IsDir() {
+			} else {
+			h := sha3.New384()
+			f, err := os.Open(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := io.Copy(h, f); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
+			}
+			return nil
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+
+        if *target != "" && *recursive == false && *bits == 512 {
 	files, err := filepath.Glob(*target)
 	if err != nil {
 	    log.Fatal(err)
@@ -106,6 +188,33 @@ func main() {
         }
     	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
 	}
+	}
+
+
+	if *target != "" && *recursive == true && *bits == 512 {
+		err := filepath.Walk(".",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			file, err := os.Stat(path)
+			if file.IsDir() {
+			} else {
+			h := sha3.New512()
+			f, err := os.Open(path)
+			if err != nil {
+				log.Fatal(err)
+			}
+			if _, err := io.Copy(h, f); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
+			}
+			return nil
+		})
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 
