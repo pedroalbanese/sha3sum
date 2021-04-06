@@ -21,12 +21,12 @@ sha3sum [-v] [-b N] [-c &lt;hash.ext&gt;] [-r] -t &lt;file.ext&gt;
 
 #### Generate hashsum list:
 <pre>
-$ ./sha3sum -t "*.*" > hash.txt
+$ ./sha3sum [-r] -t "*.*" > hash.txt
 </pre>
 
 #### Generate recursive hashsum list:
 <pre>
-$ find . -type f -name "*.*" -exec ./sha3sum -t '{}' \; > hash.txt 
+$ find . -type f -name "*.*" -exec ./sha3sum [-r] -t '{}' \; > hash.txt 
 </pre>
 ##### Always works in binary mode. 
 
