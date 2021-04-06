@@ -5,7 +5,7 @@
 SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021
 
 Usage of sha3sum:
-sha3sum [-v] [-b N] [-c <hash.ext>] -t &lt;file.ext&gt;
+sha3sum [-v] [-b N] [-c &lt;hash.ext&gt;] -t &lt;file.ext&gt;
 
   -b int
         Bits: 224, 256, 384 and 512. (default 224)
