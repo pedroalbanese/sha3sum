@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"golang.org/x/crypto/sha3"
+	"hash"
 	"io"
 	"log"
 	"os"
@@ -12,8 +13,8 @@ import (
 	"strings"
 )
 
-	var check = flag.String("c", "", "Check hashsum file.")
 	var bits = flag.Int("b", 224, "Bits: 224, 256, 384 and 512.")
+	var check = flag.String("c", "", "Check hashsum file.")
 	var recursive = flag.Bool("r", false, "Process directories recursively.")
 	var target = flag.String("t", "", "Target file/wildcard to generate hashsum list.")
 	var verbose = flag.Bool("v", false, "Verbose mode. (The exit code is always 0 in this mode)")
@@ -30,14 +31,23 @@ func main() {
         }
 
 
-        if *target != "" && *recursive == false && *bits == 224 {
+        if *target != "" && *recursive == false {
 	files, err := filepath.Glob(*target)
 	if err != nil {
 	    log.Fatal(err)
 	}
 
 	for _, match := range files {
-	h := sha3.New224()
+	var h hash.Hash
+	if *bits == 224 {
+	h = sha3.New224()
+	} else if *bits == 256 {
+	h = sha3.New256()
+	} else if *bits == 384 {
+	h = sha3.New384()
+	} else if *bits == 512 {
+	h = sha3.New512()
+	}
         f, err := os.Open(match)
         if err != nil {
             log.Fatal(err)
@@ -66,7 +76,16 @@ func main() {
 					fmt.Println(err)
 				}
 				if matched {
-				h := sha3.New224()
+				var h hash.Hash
+				if *bits == 224 {
+				h = sha3.New224()
+				} else if *bits == 256 {
+				h = sha3.New256()
+				} else if *bits == 384 {
+				h = sha3.New384()
+				} else if *bits == 512 {
+				h = sha3.New512()
+				}
 			        f, err := os.Open(path)
 			        if err != nil {
 			            log.Fatal(err)
@@ -85,172 +104,7 @@ func main() {
 	}
 
 
-        if *target != "" && *recursive == false && *bits == 256 {
-	files, err := filepath.Glob(*target)
-	if err != nil {
-	    log.Fatal(err)
-	}
-
-	for _, match := range files {
-	h := sha3.New256()
-        f, err := os.Open(match)
-        if err != nil {
-            log.Fatal(err)
-        }
-        if _, err := io.Copy(h, f); err != nil {
-            log.Fatal(err)
-        }
-    	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-	}
-	}
-
-
-	if *target != "" && *recursive == true && *bits == 256 {
-		err := filepath.Walk(filepath.Dir(*target),
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			file, err := os.Stat(path)
-			if file.IsDir() {
-			} else {
-				filename := filepath.Base(path)
-				pattern := filepath.Base(*target)
-				matched, err := filepath.Match(pattern, filename)
-				if err != nil {
-					fmt.Println(err)
-				}
-				if matched {
-				h := sha3.New256()
-			        f, err := os.Open(path)
-			        if err != nil {
-			            log.Fatal(err)
-			        }
-				if _, err := io.Copy(h, f); err != nil {
-					log.Fatal(err)
-				}
-			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-			}
-			}
-			return nil
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-
-        if *target != "" && *recursive == false && *bits == 384 {
-	files, err := filepath.Glob(*target)
-	if err != nil {
-	    log.Fatal(err)
-	}
-
-	for _, match := range files {
-	h := sha3.New384()
-        f, err := os.Open(match)
-        if err != nil {
-            log.Fatal(err)
-        }
-        if _, err := io.Copy(h, f); err != nil {
-            log.Fatal(err)
-        }
-    	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-	}
-	}
-
-
-	if *target != "" && *recursive == true && *bits == 384 {
-		err := filepath.Walk(filepath.Dir(*target),
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			file, err := os.Stat(path)
-			if file.IsDir() {
-			} else {
-				filename := filepath.Base(path)
-				pattern := filepath.Base(*target)
-				matched, err := filepath.Match(pattern, filename)
-				if err != nil {
-					fmt.Println(err)
-				}
-				if matched {
-				h := sha3.New384()
-			        f, err := os.Open(path)
-			        if err != nil {
-			            log.Fatal(err)
-			        }
-				if _, err := io.Copy(h, f); err != nil {
-					log.Fatal(err)
-				}
-			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-			}
-			}
-			return nil
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-
-        if *target != "" && *recursive == false && *bits == 512 {
-	files, err := filepath.Glob(*target)
-	if err != nil {
-	    log.Fatal(err)
-	}
-
-	for _, match := range files {
-	h := sha3.New512()
-        f, err := os.Open(match)
-        if err != nil {
-            log.Fatal(err)
-        }
-        if _, err := io.Copy(h, f); err != nil {
-            log.Fatal(err)
-        }
-    	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-	}
-	}
-
-
-	if *target != "" && *recursive == true && *bits == 512 {
-		err := filepath.Walk(filepath.Dir(*target),
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			file, err := os.Stat(path)
-			if file.IsDir() {
-			} else {
-				filename := filepath.Base(path)
-				pattern := filepath.Base(*target)
-				matched, err := filepath.Match(pattern, filename)
-				if err != nil {
-					fmt.Println(err)
-				}
-				if matched {
-				h := sha3.New512()
-			        f, err := os.Open(path)
-			        if err != nil {
-			            log.Fatal(err)
-			        }
-				if _, err := io.Copy(h, f); err != nil {
-					log.Fatal(err)
-				}
-			fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
-			}
-			}
-			return nil
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-
-        if *check != "" && *bits == 224 {
+        if *check != "" {
 	file, err := os.Open(*check)
  
 	if err != nil {
@@ -267,7 +121,16 @@ func main() {
 	for _, eachline := range txtlines {
 	lines := strings.Split(string(eachline), " *")
 	if strings.Contains(string(eachline), " *") {
-	h := sha3.New224()
+	var h hash.Hash
+	if *bits == 224 {
+	h = sha3.New224()
+	} else if *bits == 256 {
+	h = sha3.New256()
+	} else if *bits == 384 {
+	h = sha3.New384()
+	} else if *bits == 512 {
+	h = sha3.New512()
+	}
 	_, err := os.Stat(lines[1])
 	if err == nil {
 		f, err := os.Open(lines[1])
@@ -297,159 +160,5 @@ func main() {
 	}
 	}
 	}
-
-	}
-
-
-        if *check != "" && *bits == 256 {
-	file, err := os.Open(*check)
- 
-	if err != nil {
-		log.Fatalf("failed opening file: %s", err)
-	}
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
-	var txtlines []string
- 
-	for scanner.Scan() {
-		txtlines = append(txtlines, scanner.Text())
-	}
-	file.Close()
-	for _, eachline := range txtlines {
-	lines := strings.Split(string(eachline), " *")
-	if strings.Contains(string(eachline), " *") {
-	h := sha3.New256()
-	_, err := os.Stat(lines[1])
-	if err == nil {
-		f, err := os.Open(lines[1])
-		if err != nil {
-		     log.Fatal(err)
-		}
-		io.Copy(h, f)
-		
-		if *verbose {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-				fmt.Println(lines[1] + "\t", "OK")
-			} else {
-				fmt.Println(lines[1] + "\t", "FAILED")
-			}
-		} else {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-			} else {
-				os.Exit(1)
-			}
-		}
-	} else {
-		if *verbose {
-			fmt.Println(lines[1] + "\t", "Not found!")
-		} else {
-			os.Exit(1)	
-		}	
-	}
-	}
-	}
-
-	}
-
-
-        if *check != "" && *bits == 384 {
-	file, err := os.Open(*check)
- 
-	if err != nil {
-		log.Fatalf("failed opening file: %s", err)
-	}
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
-	var txtlines []string
- 
-	for scanner.Scan() {
-		txtlines = append(txtlines, scanner.Text())
-	}
-	file.Close()
-	for _, eachline := range txtlines {
-	lines := strings.Split(string(eachline), " *")
-	if strings.Contains(string(eachline), " *") {
-	h := sha3.New384()
-	_, err := os.Stat(lines[1])
-	if err == nil {
-		f, err := os.Open(lines[1])
-		if err != nil {
-		     log.Fatal(err)
-		}
-		io.Copy(h, f)
-		
-		if *verbose {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-				fmt.Println(lines[1] + "\t", "OK")
-			} else {
-				fmt.Println(lines[1] + "\t", "FAILED")
-			}
-		} else {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-			} else {
-				os.Exit(1)
-			}
-		}
-	} else {
-		if *verbose {
-			fmt.Println(lines[1] + "\t", "Not found!")
-		} else {
-			os.Exit(1)	
-		}	
-	}
-	}
-	}
-
-	}
-
-
-        if *check != "" && *bits == 512 {
-	file, err := os.Open(*check)
- 
-	if err != nil {
-		log.Fatalf("failed opening file: %s", err)
-	}
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
-	var txtlines []string
- 
-	for scanner.Scan() {
-		txtlines = append(txtlines, scanner.Text())
-	}
-	file.Close()
-	for _, eachline := range txtlines {
-	lines := strings.Split(string(eachline), " *")
-	if strings.Contains(string(eachline), " *") {
-	h := sha3.New512()
-	_, err := os.Stat(lines[1])
-	if err == nil {
-		f, err := os.Open(lines[1])
-		if err != nil {
-		     log.Fatal(err)
-		}
-		io.Copy(h, f)
-		
-		if *verbose {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-				fmt.Println(lines[1] + "\t", "OK")
-			} else {
-				fmt.Println(lines[1] + "\t", "FAILED")
-			}
-		} else {
-			if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-			} else {
-				os.Exit(1)
-			}
-		}
-	} else {
-		if *verbose {
-			fmt.Println(lines[1] + "\t", "Not found!")
-		} else {
-			os.Exit(1)	
-		}	
-	}
-	}
-	}
-
 	}
 }
