@@ -57,7 +57,7 @@ func main() {
 	}
 	}
 
-	if *target != "" && *recursive == true && *bits == 224 {
+	if *target != "" && *recursive == true {
 		err := filepath.Walk(filepath.Dir(*target),
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
