@@ -22,7 +22,6 @@ import (
 func main() {
     flag.Parse()
 
-
         if (len(os.Args) < 2) || (*bits != 224 && *bits != 256 && *bits != 384 && *bits != 512) {
 	fmt.Println("SHA3 Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
 	fmt.Println("Usage of",os.Args[0]+":")
@@ -36,7 +35,6 @@ func main() {
 	if err != nil {
 	    log.Fatal(err)
 	}
-
 	for _, match := range files {
 	var h hash.Hash
 	if *bits == 224 {
@@ -58,7 +56,6 @@ func main() {
     	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
 	}
 	}
-
 
 	if *target != "" && *recursive == true && *bits == 224 {
 		err := filepath.Walk(filepath.Dir(*target),
@@ -102,7 +99,6 @@ func main() {
 			log.Println(err)
 		}
 	}
-
 
         if *check != "" {
 	file, err := os.Open(*check)
