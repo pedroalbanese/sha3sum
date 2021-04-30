@@ -2,7 +2,7 @@
 ## sha3sum Parallel Implementation written in Go
 
 <PRE>
-SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021
+SHA3 Hashsum Tool - ALBANESE Lab (c) 2020-2021
 
 Usage of sha3sum:
 sha3sum [-v] [-b N] [-c &lt;hash.ext&gt;] [-r] -t &lt;file.ext&gt;
