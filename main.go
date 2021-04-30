@@ -22,14 +22,14 @@ import (
 func main() {
     flag.Parse()
 
-        if (len(os.Args) < 2) {
-	fmt.Println("SHA3 Keccak Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
+
+        if (len(os.Args) < 2) || (*bits != 224 && *bits != 256 && *bits != 384 && *bits != 512) {
+	fmt.Println("SHA3 Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
 	fmt.Println("Usage of",os.Args[0]+":")
         fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] [-r] -t <file.ext>\n\n", os.Args[0])
         flag.PrintDefaults()
         os.Exit(1)
         }
-
 
         if *target != "" && *recursive == false {
 	files, err := filepath.Glob(*target)
