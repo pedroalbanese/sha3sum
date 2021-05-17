@@ -50,14 +50,18 @@ func main() {
         if err != nil {
             log.Fatal(err)
         }
+	file, err := os.Stat(match)
+	if file.IsDir() {
+	} else {
         if _, err := io.Copy(h, f); err != nil {
             log.Fatal(err)
         }
     	fmt.Println(hex.EncodeToString(h.Sum(nil)), "*" + f.Name())
 	}
 	}
+	}
 
-	if *target != "" && *recursive == true {
+	if *target != "" && *recursive == true && *bits == 224 {
 		err := filepath.Walk(filepath.Dir(*target),
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
