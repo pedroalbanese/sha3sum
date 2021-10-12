@@ -30,3 +30,8 @@ $ ./sha3sum [-r] -t "*.*" > hash.txt
 $ ./sha3sum [-v] -c hash.txt
 </pre>
 ##### Exit code is always 0 in vebose mode. 
+
+## License
+
+This project is licensed under the ISC License.
+##### Copyright (c) 2020-2021 Pedro Albanese - ALBANESE Lab.
