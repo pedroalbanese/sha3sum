@@ -19,7 +19,6 @@ var (
 	bits      = flag.Int("b", 256, "Bits: 224, 256, 384 and 512.")
 	check     = flag.String("c", "", "Check hashsum file.")
 	recursive = flag.Bool("r", false, "Process directories recursively.")
-	target    = flag.String("t", "", "Target file/wildcard to generate hashsum list.")
 	verbose   = flag.Bool("v", false, "Verbose mode. (The exit code is always 0 in this mode)")
 )
 
@@ -29,12 +28,14 @@ func main() {
 	if (len(os.Args) < 2) || (*bits != 224 && *bits != 256 && *bits != 384 && *bits != 512) {
 		fmt.Println("SHA3 Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
 		fmt.Println("Usage of", os.Args[0]+":")
-		fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] [-r] -t <file.ext>\n\n", os.Args[0])
+		fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] [-r] <file.ext>\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
-	if *target == "-" {
+	Files := strings.Join(flag.Args(), " ")
+
+	if Files == "-" {
 		var h hash.Hash
 		if *bits == 224 {
 			h = sha3.New224()
@@ -50,8 +51,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *target != "" && *recursive == false {
-		files, err := filepath.Glob(*target)
+	if strings.Contains(Files, "*") && *check == "" && *recursive == false {
+		files, err := filepath.Glob(Files)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -82,8 +83,40 @@ func main() {
 		}
 	}
 
-	if *target != "" && *recursive == true {
-		err := filepath.Walk(filepath.Dir(*target),
+	if *check == "" && *recursive == false {
+		files, err := filepath.Glob(Files)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, match := range files {
+			var h hash.Hash
+			if *bits == 224 {
+				h = sha3.New224()
+			} else if *bits == 256 {
+				h = sha3.New256()
+			} else if *bits == 384 {
+				h = sha3.New384()
+			} else if *bits == 512 {
+				h = sha3.New512()
+			}
+			f, err := os.Open(match)
+			if err != nil {
+				log.Fatal(err)
+			}
+			file, err := os.Stat(match)
+			if file.IsDir() {
+			} else {
+				if _, err := io.Copy(h, f); err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
+			}
+			f.Close()
+		}
+	}
+
+	if *check == "" && *recursive == true {
+		err := filepath.Walk(filepath.Dir(Files),
 			func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					return err
@@ -91,32 +124,34 @@ func main() {
 				file, err := os.Stat(path)
 				if file.IsDir() {
 				} else {
-					filename := filepath.Base(path)
-					pattern := filepath.Base(*target)
-					matched, err := filepath.Match(pattern, filename)
-					if err != nil {
-						fmt.Println(err)
-					}
-					if matched {
-						var h hash.Hash
-						if *bits == 224 {
-							h = sha3.New224()
-						} else if *bits == 256 {
-							h = sha3.New256()
-						} else if *bits == 384 {
-							h = sha3.New384()
-						} else if *bits == 512 {
-							h = sha3.New512()
-						}
-						f, err := os.Open(path)
+					for _, match := range flag.Args() {
+						filename := filepath.Base(path)
+						pattern := filepath.Base(match)
+						matched, err := filepath.Match(pattern, filename)
 						if err != nil {
-							log.Fatal(err)
+							fmt.Println(err)
 						}
-						if _, err := io.Copy(h, f); err != nil {
-							log.Fatal(err)
+						if matched {
+							var h hash.Hash
+							if *bits == 224 {
+								h = sha3.New224()
+							} else if *bits == 256 {
+								h = sha3.New256()
+							} else if *bits == 384 {
+								h = sha3.New384()
+							} else if *bits == 512 {
+								h = sha3.New512()
+							}
+							f, err := os.Open(path)
+							if err != nil {
+								log.Fatal(err)
+							}
+							if _, err := io.Copy(h, f); err != nil {
+								log.Fatal(err)
+							}
+							f.Close()
+							fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
 						}
-						f.Close()
-						fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
 					}
 				}
 				return nil
