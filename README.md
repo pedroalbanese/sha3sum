@@ -19,7 +19,7 @@ sha3sum [-v] [-b N] [-c &lt;hash.ext&gt;] [-r] &lt;file.ext&gt;
 
 #### Generate hashsum list:
 <pre>
-$ ./sha3sum [-r] -t "*.*" > hash.txt
+$ ./sha3sum [-r] "*.*" > hash.txt
 </pre>
 ##### Always works in binary mode. 
 
