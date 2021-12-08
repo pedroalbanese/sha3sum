@@ -27,7 +27,7 @@ $ ./sha3sum [-r] "*.*" > hash.txt
 <pre>
 $ ./sha3sum [-v] -c hash.txt
 </pre>
-##### Exit code is always 0 in vebose mode. 
+##### Exit code is always 0 in verbose mode. 
 
 ## License
 
