@@ -51,68 +51,39 @@ func main() {
 		os.Exit(0)
 	}
 
-	if strings.Contains(Files, "*") && *check == "" && *recursive == false {
-		files, err := filepath.Glob(Files)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, match := range files {
-			var h hash.Hash
-			if *bits == 224 {
-				h = sha3.New224()
-			} else if *bits == 256 {
-				h = sha3.New256()
-			} else if *bits == 384 {
-				h = sha3.New384()
-			} else if *bits == 512 {
-				h = sha3.New512()
-			}
-			f, err := os.Open(match)
-			if err != nil {
-				log.Fatal(err)
-			}
-			file, err := os.Stat(match)
-			if file.IsDir() {
-			} else {
-				if _, err := io.Copy(h, f); err != nil {
-					log.Fatal(err)
-				}
-				fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
-			}
-			f.Close()
-		}
-	}
-
 	if *check == "" && *recursive == false {
-		files, err := filepath.Glob(Files)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for _, match := range files {
-			var h hash.Hash
-			if *bits == 224 {
-				h = sha3.New224()
-			} else if *bits == 256 {
-				h = sha3.New256()
-			} else if *bits == 384 {
-				h = sha3.New384()
-			} else if *bits == 512 {
-				h = sha3.New512()
-			}
-			f, err := os.Open(match)
+		for _, wildcard := range flag.Args() {
+			files, err := filepath.Glob(wildcard)
 			if err != nil {
 				log.Fatal(err)
 			}
-			file, err := os.Stat(match)
-			if file.IsDir() {
-			} else {
-				if _, err := io.Copy(h, f); err != nil {
+			for _, match := range files {
+				var h hash.Hash
+				if *bits == 224 {
+					h = sha3.New224()
+				} else if *bits == 256 {
+					h = sha3.New256()
+				} else if *bits == 384 {
+					h = sha3.New384()
+				} else if *bits == 512 {
+					h = sha3.New512()
+				}
+				f, err := os.Open(match)
+				if err != nil {
 					log.Fatal(err)
 				}
-				fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
+				file, err := os.Stat(match)
+				if file.IsDir() {
+				} else {
+					if _, err := io.Copy(h, f); err != nil {
+						log.Fatal(err)
+					}
+					fmt.Println(hex.EncodeToString(h.Sum(nil)), "*"+f.Name())
+				}
+				f.Close()
 			}
-			f.Close()
 		}
+		os.Exit(0)
 	}
 
 	if *check == "" && *recursive == true {
