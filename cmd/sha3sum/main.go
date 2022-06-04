@@ -27,7 +27,7 @@ func main() {
 	if (len(os.Args) < 2) || (*bits != 224 && *bits != 256 && *bits != 384 && *bits != 512) {
 		fmt.Println("SHA3 Hashsum Tool - ALBANESE Lab (c) 2020-2021\n")
 		fmt.Println("Usage of", os.Args[0]+":")
-		fmt.Printf("%s [-v] [-b N] [-c <hash.ext>] [-r] <file.ext>\n", os.Args[0])
+		fmt.Printf("%s [-c <hash.ext>] [-b N] [-r] <file.ext>\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
