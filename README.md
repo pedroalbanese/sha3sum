@@ -26,8 +26,8 @@ $ ./sha3sum [-r] "*.*" > hash.txt
 #### Check hashsum file:
 <pre>
 $ ./sha3sum -c hash.txt
+$ echo $?
 </pre>
-##### Exit code is always 0 in verbose mode. 
 
 ## License
 
