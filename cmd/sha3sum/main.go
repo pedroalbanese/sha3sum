@@ -19,7 +19,6 @@ var (
 	bits      = flag.Int("b", 256, "Bits: 224, 256, 384 and 512.")
 	check     = flag.String("c", "", "Check hashsum file.")
 	recursive = flag.Bool("r", false, "Process directories recursively.")
-	verbose   = flag.Bool("v", false, "Verbose mode. (The exit code is always 0 in this mode)")
 )
 
 func main() {
@@ -150,17 +149,18 @@ func main() {
 		for scanner.Scan() {
 			txtlines = append(txtlines, scanner.Text())
 		}
+		var exit int
 		for _, eachline := range txtlines {
 			lines := strings.Split(string(eachline), " *")
 			if strings.Contains(string(eachline), " *") {
 				var h hash.Hash
-				if *bits == 224 {
+				if len(lines[0])*4 == 224 {
 					h = sha3.New224()
-				} else if *bits == 256 {
+				} else if len(lines[0])*4 == 256 {
 					h = sha3.New256()
-				} else if *bits == 384 {
+				} else if len(lines[0])*4 == 384 {
 					h = sha3.New384()
-				} else if *bits == 512 {
+				} else if len(lines[0])*4 == 512 {
 					h = sha3.New512()
 				}
 				_, err := os.Stat(lines[1])
@@ -172,26 +172,18 @@ func main() {
 					io.Copy(h, f)
 					f.Close()
 
-					if *verbose {
-						if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-							fmt.Println(lines[1]+"\t", "OK")
-						} else {
-							fmt.Println(lines[1]+"\t", "FAILED")
-						}
+					if hex.EncodeToString(h.Sum(nil)) == lines[0] {
+						fmt.Println(lines[1]+"\t", "OK")
 					} else {
-						if hex.EncodeToString(h.Sum(nil)) == lines[0] {
-						} else {
-							os.Exit(1)
-						}
+						fmt.Println(lines[1]+"\t", "FAILED")
+						exit = 1
 					}
 				} else {
-					if *verbose {
-						fmt.Println(lines[1]+"\t", "Not found!")
-					} else {
-						os.Exit(1)
-					}
+					fmt.Println(lines[1]+"\t", "Not found!")
+					exit = 1
 				}
 			}
 		}
+		os.Exit(exit)
 	}
 }
